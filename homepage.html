@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!--CSS for webpage Zoom    -->
+<style>
+#zoom{
+zoom: 90%;
+}
+</style>
+
+<div id="zoom">
+
+<!--CSS for Placeholder-->
+<style>
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  color: #B0B0B0
+}
+
+div[contenteditable=true] {
+  width: 290px;
+  padding: 5px;
+}
+
+pre {
+  background:#EEE;
+  padding:5px;
+  width: 290px;
+}
+</style>
+
+
+<!--CSS Changing the font and font size of an HTML input tag  -->
+<style>
+input[type='date'] { font-size: 15px; }
+input[type='button'] { font-size: 15px; }
+</style>
+
+<!--Adding browser tab icon  -->
+<link rel="icon" href="https://r1.cpapracticeadvisor.com/files/base/CSN/image/2018/02/16x9/640x360/2000px_SAP_2011_logo_svg_1_.5a860ed9acbc0.jpg">
+
+<!--CSS Horizontal Scroll Menu-->
+<style>
+div.scrollmenu {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  <!--text-align: center;-->
+  padding: 14px;
+  text-decoration: none;
+}
+</style>
+
+<!--CSS Border  -->
+<style>
+  body {
+  background: #F5F5F5;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+.container {
+  position: relative;
+  margin: 0 auto;
+  width: 150%;
+  max-width: 1100px;
+  font-family: helvetica, sans-serif;
+}
+.content {
+  position: relative;
+  padding-top: 80px;
+}
+#header {
+  z-index: 2;
+  position: fixed;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  background: #222;
+  color: white;
+}
+#header h1 {
+  top: 0px;
+  margin: 0px;
+  text-transform: uppercase;
+  font-size: 1.2em;
+}
+#nav {
+  position: absolute;
+  right: 0;
+  top: -15px;
+  height: 60px;
+}
+</style>
+
+
+<!--CSS Table  -->
+<style>
+
+table, td, th {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: arial, sans-serif;
+}
+
+th, td {
+  padding: 15px;
+}
+</style>
+
+<!--Top Border Header-->
+<header id="header">
+  <div class="container">
+    <center> <h1> Outage Lifecycle Dashboard </h1> </center>
+  </div>
+</header>
+
+</head>
+
+<body>
+     <div class="content">
+
+<center>
+
+  <form >
+  <h3>From :
+  <input type="date" id="fromDate" value="{{selectFromDate}}">
+
+  To :
+  <input type="date" id="toDate" value="{{selectTodate}}" >
+
+  <input type="button" onclick="getOutageData()" value="Search">
+  <button style="width: 117px; height: 24px; font-size: 15px;" onclick="exportTableToExcel('outage_tbl','Outage_lifecycle')">Export to Excel</button>
+
+  </form>
+
+
+<form action = "saveData" method = "POST",>
+    <button style="width: 117px; height: 24px; font-size: 15px;" onclick="saveData()">Save to Database</button>
+
+</center>
+
+<script>
+
+function getOutageData()
+{
+fromDate = document.getElementById("fromDate").value;
+toDate = document.getElementById("toDate").value;
+
+<!--if(fromDate == "" || toDate == ""){-->
+  <!--alert("Please select \"From\" and \"To\" dates")-->
+  <!--return false;-->
+<!--}-->
+
+if(fromDate > toDate){
+  alert("\"From\" date cannot be greater than \"To\" date")
+  return false;
+}
+
+window.location.href = "/?from_date="+fromDate+"&to_date="+toDate
+}
+
+
+function exportTableToExcel(tableID, filename = ''){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    // Specify file name
+    filename = filename?filename+'.csv':'outage_lifecycle.csv';
+
+    // Create download link element
+    downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+        // Setting the file name
+        downloadLink.download = filename;
+
+        //triggering the function
+        downloadLink.click();
+    }
+}
+
+</script>
+
+<!--Set Dropdown width & height CSS in table column-->
+<style>
+#Dropdown{
+    width:120px;
+    height:27px;
+    font-size:15px;
+}
+</style>
+
+<!--datetime picker CSS-->
+<style>
+#datetimepicker{
+    height:23px;
+    font-size:15px;
+</style>
+
+<br>
+
+<div class="scrollmenu">
+<table id="outage_tbl" bgcolor="#FFFFFF",align="centre">
+  <tr>
+    <th bgcolor="#DCE49D" col width="80">Outage No.</th>
+    <th bgcolor="#DCE49D" col width="200">Outage Description</th>
+    <th bgcolor="#DCE49D" col width="50">Landscape</th>
+    <th bgcolor="#DCE49D" col width="50">Platform</th>
+    <th bgcolor="#DCE49D" col width="100">Causing Service Group</th>
+    <th bgcolor="#DCE49D" col width="100">First SPC(Date+Time(UTC))</th>
+    <th bgcolor="#DCE49D" col width="100">Outage Location</th>
+	<th bgcolor="#DCE49D" col width="100">CE informed by</th>
+	<th bgcolor="#DCE49D" col width="100">Bridge call started by</th>
+	<th bgcolor="#DCE49D" col width="100">CE involved</th>
+	<th bgcolor="#DCE49D" col width="100">CE informed (Date + Time UTC)</th>
+	<th bgcolor="#DCE49D" col width="100">Bridge call started (MoD & more informed)</th>
+	<th bgcolor="#DCE49D" col width="100">First expert contacted by CE</th>
+	<th bgcolor="#DCE49D" col width="100">Right expert found</th>
+	<th bgcolor="#DCE49D" col width="100">Right expert solved the issue (service recoevered)</th>
+	<th bgcolor="#DCE49D" col width="100">Bridge Call closed</th>
+	<th bgcolor="#DCE49D" col width="100">CE informed (Minutes)</th>
+	<th bgcolor="#DCE49D" col width="100">Bridge call started (MoD & more informed)</th>
+	<th bgcolor="#DCE49D" col width="100">Started the bridge call (MoD & more informed)</th>
+	<th bgcolor="#DCE49D" col width="100">Time to contact the First expert by CE</th>
+	<th bgcolor="#DCE49D" col width="100">Time to find the right expert</th>
+	<th bgcolor="#DCE49D" col width="100">Time Diffrence between F.E & R.E()</th>
+	<th bgcolor="#DCE49D" col width="100">First expert contacted by CE</th>
+	<th bgcolor="#DCE49D" col width="100">Right expert found</th>
+	<th bgcolor="#DCE49D" col width="100">Right expert solved the issue</th>
+	<th bgcolor="#DCE49D" col width="100">Bridge Call closed</th>
+	<th bgcolor="#DCE49D" col width="100">Total Resolution Time</th>
+	<th bgcolor="#DCE49D" col width="100">Customer announcement “identified”(Date / Time UTC)</th>
+	<th bgcolor="#DCE49D" col width="100">Customer announcement “restored”</th>
+	<th bgcolor="#DCE49D" col width="100">Customer announcement “identified”(Minutes)</th>
+	<th bgcolor="#DCE49D" col width="100">Customer announcement “restored”(Minutes)</th>
+	<th bgcolor="#DCE49D" col width="100">Senior Management / Board informed "Disruption" (Date / Time UTC)</th>
+	<th bgcolor="#DCE49D" col width="100">Senior Management / Board informed "Resolved" (Date / Time UTC)</th>
+	<th bgcolor="#DCE49D" col width="100">Senior Management / Board informed "Disruption" (Minutes)</th>
+	<th bgcolor="#DCE49D" col width="100">Senior Management / Board informed "Resolved" (Minutes)</th>
+	<th bgcolor="#DCE49D" col width="100">Repeated Issue (only to be filled out if this is known)</th>
+    <th bgcolor="#DCE49D" col width="100">Remarks</th>
+  </tr>
+
+
+  {% for each in outage_data_list %}
+  <tr>
+    <td><a name="Outage_No" id="Dropdown11" href={{each.outage_link}} target="_blank">Outage-3122</a></td>
+    <td><a name ="summary" id="summary"  >This is Summer</a></td>
+    <td>{{each.outage_landscape}}</td>
+    <td>{{each.outage_platform}}</td>
+    <td>{{each.outage_causing_group}}</td>
+    <td><input type="datetime-local" id="datetimepicker" name="firstSPC"></td>
+    <td><select name="Outage Location" id="Dropdown"><option value="Select">Select</option><option value="BLR">BLR</option><option value="SOF">SOF</option><option value="VCR">VCR</option></select></td>
+    <td><select name="CE informed by" id="Dropdown"><option value="Select">Select</option><option value="L1">L1</option><option value="CPI">CPI</option></select></td>
+    <td><select name="Bridge call started by" id="Dropdown"><option value="Select">Select</option><option value="CE">CE</option><option value="CPI">CPI</option></select></td>
+    <td><select name="CE involved" id="Dropdown"><option value="Select">Select</option><option value="Yes">Yes</option><option value="No">No</option></select></td>
+    <td><div name="CE informed at" contenteditable="true" placeholder="Add Date and time (In UTC)">08:30</div></td>
+    <td><div name="Bridge call started at" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="First expert contacted by CE at" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Right expert found at" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Right expert solved the issue" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Bridge Call closed at" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="CE informed at(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Bridge call started at(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Started the bridge call (MoD & more informed)(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Time to contact the First expert by CE(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Time to find the right expert(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Time Diffrence between F.E & R.E" contenteditable="true" placeholder="Time Diffrence between F.E & R.E"></div></td>
+    <td><div name="First expert contacted by CE at(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Right expert found at(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Right expert solved the issue (service recoevered) at(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Bridge Call closed at(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Total Resolution Time(Minutes)" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Customer announcement “identified”" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Customer announcement “restored”" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Customer announcement “identified”" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Customer announcement “restored”" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Senior Management / Board informed “Disruption”" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Senior Management / Board informed “Resolved”" contenteditable="true" placeholder="Add Date and time (In UTC)"></div></td>
+    <td><div name="Senior Management / Board informed “Disruption”" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Senior Management / Board informed “Resolved”" contenteditable="true" placeholder="Add Minutes"></div></td>
+    <td><div name="Repeated Issue (only to be filled out if this is known)" contenteditable="true" placeholder="Repeated Issue (only to be filled out if this is known)"></div></td>
+    <td><div name="Remarks" contenteditable="true" placeholder="Remarks"></div></td>
+  </tr>
+{% endfor %}
+</table>
+        </div>
+  </div>
+</body>
+</html>
