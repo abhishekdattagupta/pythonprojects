@@ -14,6 +14,6 @@ print("Shape of Array A:", a.shape)
 print("Dimension of Array A :", a.ndim)
 
 '''
-Here we see that after applying ravel, the array is flattened as 1D and it still has 2 dimensions
+Conclusion: Here we see that after applying ravel, the array is flattened as 1D and it still has 2 dimensions
 and the shape shows that row has 1 element and column has 4 elements
 '''
